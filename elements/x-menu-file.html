@@ -1,0 +1,61 @@
+<dom-module id="x-menu-file">
+    <style>
+    :host {
+        display : block;
+        @apply(--layout);
+        @apply(--layout-horizontal);
+        @apply(--layout-wrap);
+    }
+    x-button{
+        margin: 5px 10px;
+        width: 30%;
+    }
+    #open-file{
+        position: relative;
+        overflow: hidden;
+    }
+    #open-file-input{
+        position: absolute;
+        top: 0; right: 0;
+        margin: 0; padding: 0;
+        font-size: 20px;
+        opacity: 0;
+        cursor: pointer;
+    }
+    </style>
+    <template>
+    <x-button class="warning" id="open-file">
+        <iron-icon icon="fa:folder-open"></iron-icon>
+        <span id="open-file-span">open</span>
+        <input id="open-file-input" type="file" on-change="upload_file">
+    </x-button>
+    <x-button class="warning" id="save-file" on-click="save_file">
+        <iron-icon icon="fa:picture-o"></iron-icon>
+        <span id="save-file-span">save result</span>
+    </x-button>
+    </template>
+    <script>
+    (function(){
+        Polymer({
+            is: "x-menu-file",
+            properties: {
+            },
+            save_file: function(){
+                var canvas = document.querySelector('x-canvas');
+                var image_data = canvas.generate_data();
+                document.location.href = image_data.replace('image/png', 'image/octet-stream');
+            },
+            upload_file: function(){
+                var file = this.$['open-file-input'].files[0];
+                console.log(file);
+                var reader = new FileReader();
+                reader.onload = function(){
+                common.naclModule.postMessage({'cmd': 'open image', data: reader.result});
+                this.fire('close-menu');
+                }.bind(this);
+                reader.readAsArrayBuffer(file);
+            },
+        });
+    })();        
+    </script>
+</dom-module>

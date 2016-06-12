@@ -1,0 +1,86 @@
+<dom-module id="x-toolbar">
+    <style>
+    :host {
+        display : block;
+    }
+    x-window{
+        /* width: fit-content; */
+        width: 125px;
+    }
+    .content{
+        width: 105px; 
+        apply(--layout-horizontal);
+        apply(--layout-wrap);
+    }
+    .icon-static{
+        margin: 0px;
+        padding: 10px;
+        apply(--layout-flex-2);
+        --iron-icon-fill-color: var(--paper-grey-400);
+        --iron-icon-width: 30px;
+        --iron-icon-height: 30px;
+    } 
+    .icon-static:hover{
+        transform: rotate(360deg);
+    }
+    .icon-chosen{
+        --iron-icon-fill-color: var(--paper-grey-50);
+    }
+    </style>
+    <template>
+    <x-window window_id="toolbar" title="toolbar" closebutton>
+        <div class="content">
+            <template is="dom-repeat" items="[[tools]]">
+                <iron-icon icon="[[item.icon]]" 
+                    class="icon-static" id="[[item.id]]"
+                    on-click="choose"></iron-icon>
+            </template>
+        </div>
+    </x-window>
+    </template>
+    <script>
+    (function(){
+        Polymer({
+            is: "x-toolbar",
+            properties: {
+                tools: {type: Array, value: []},                
+            },
+            attached: function(){
+                this.active_tool = null;
+                this.tools = [
+                {icon: 'toolbar:zoomin', id: 'zoomin'},
+                {icon: 'toolbar:zoomout', id: 'zoomout'},
+                {icon: 'toolbar:brush', id: 'brush'},
+                {icon: 'toolbar:selection', id: 'selection'},
+                {icon: 'toolbar:polygon', id: 'polygon'},
+                {icon: 'toolbar:drag', id: 'drag'},
+                ];
+            },
+            choose: function(e){
+                var item = e.model.item;
+                if (!this.active_tool || this.active_tool.id != item.id){
+                    if (this.active_tool){
+                    // d3.select('icon-static').classed('icon-chosen', false);
+                        this.active_tool.classList.remove('icon-chosen');
+                        this.active_tool.animate([
+                            {transform: 'scale(1.5)'},
+                            {transform: 'scale(1)'},
+                        ], {duration: 200, fill: 'forwards'});
+                        this.active_tool.updateStyles();
+                    }
+                    this.active_tool = this.$$('#'+item.id);
+                    this.active_tool.classList.add('icon-chosen');
+                    this.active_tool.animate([
+                        {transform: 'scale(1)'},
+                        {transform: 'scale(1.5)'},
+                    ], {duration: 200, fill: 'forwards'});
+                    this.active_tool.updateStyles();
+                    this.fire('iron-signal', {name: 'canvas', data: {type: item.id}});
+                }
+
+            }            
+
+        });
+    })();        
+    </script>
+</dom-module>

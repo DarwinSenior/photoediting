@@ -1,0 +1,43 @@
+<dom-module id="x-button">
+    <style>
+    :host {
+        display : block;
+        --color-up : var(--paper-blue-400);
+        --color-middle : var(--paper-blue-500);
+        --color-down : var(--paper-blue-600);
+    }
+    #button.mouse-down{
+        /* background: linear-gradient(to bottom, #039BE5 0%, #03A9F4 100%); */
+        background: linear-gradient(to bottom, var(--color-down) 0%, var(--color-middle) 100%);
+    }
+    #button{
+        padding: 5px;
+        border-radius: 4px;
+        /* background: linear-gradient(to bottom, #29B6F6 0%, #03A9F4 100%); */
+        background: linear-gradient(to bottom, var(--color-up) 0%, var(--color-middle) 100%);
+        
+        text-align: center;
+        min-width: 40px;
+    }
+    </style>
+    <template>
+    <div id="button" on-mousedown="mousedown" on-mouseup="mouseup" on-mouseleave="mouseup">
+        <content></content>
+    </div> 
+    </template>
+    <script>
+    (function(){
+        Polymer({
+            is: "x-button",
+            properties: {
+            },
+            mousedown: function(){
+                this.$.button.classList.add('mouse-down');
+            },
+            mouseup: function(){
+                this.$.button.classList.remove('mouse-down');
+            }
+        });
+    })();        
+    </script>
+</dom-module>

@@ -1,0 +1,42 @@
+<doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <script src="./bower_components/webcomponentsjs/webcomponents-lite.min.js"></script>
+    <script>
+        window.Polymer = window.Polymer || {};
+        window.Polymer.dom = 'shadow';
+    </script>
+    <script src="./js/common.js"></script>
+    <link rel="import" href="./bower_components/polymer/polymer.html">
+    <link rel="import" href="./elements/elements.html">
+    <style is="custom-style">
+        body{
+            background-color: #c8c8c8;
+        }
+        /deep/ body *::shadow {
+            font-family: Helvetica Neue;
+            color: #FAFAFA;
+        }
+        /deep/ body *:focus::shadow{
+            outline: none;
+        }
+        .container{
+            position: absolute;
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+        }
+    </style>
+</head>
+<body data-name="photoediting" data-tools="pnacl newlib glibc clang-newlib mac" data-configs="Debug Release" data-path="{tc}/{config}">
+    <div class="container">
+        <x-basic-bar></x-basic-bar>
+        <x-toolbar></x-toolbar>
+        <x-canvas></x-canvas>
+        <x-layer></x-layer>
+        <x-menu></x-menu>
+    </div>
+    <div id="listener"></div>
+</body>
+</html>

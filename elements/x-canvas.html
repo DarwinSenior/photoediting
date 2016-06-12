@@ -1,0 +1,104 @@
+<dom-module id="x-canvas">
+    <style>
+    :host {
+        display : block;
+    }
+    x-window{
+        /* width: fit-content; */
+        width: 820px;
+    }
+    svg{
+        position: absolute;
+        top: 0; 
+        left: 0;
+    }
+    #wrapper{
+        position: relative;
+        height: 600;
+        width: 600;
+        overflow: hidden;
+    }
+    .layer canvas{
+        backface-visibility: hidden;
+        perspective: 1000;
+    }
+    </style>
+    <template>
+        <iron-signals on-iron-signal-canvas="dispatch_signal"></iron-signals>
+        <x-window window_id="canvas" title="canvas">
+        <div id="wrapper">
+            <!-- <svg height=600 width=600 id="viewer"></svg> -->
+            <svg height=600 width=600 id="selection"></svg>
+        </div>
+        </x-window>        
+    </template>
+    <script>
+    (function(){
+        Polymer({
+            is: "x-canvas",
+            properties: {
+            },
+            attached: function(){
+                this.viewer = new ImageViewer(common, d3.select(this.$.wrapper));
+                this.viewer.create_layer('default');
+                this.selection = new RegionSelection(d3.select(this.$.wrapper));
+                this.cursor = new Cursor(d3.select(this.$.wrapper));
+                this.viewer.enable();
+                this.$.selection.style.display = 'none';
+            },
+            generate_data: function(){
+                return this.viewer.layers.get('default').node().toDataURL('image/png'); 
+            },            
+            /**
+             * dom.fire('iron-signal', {name: 'canvas', data: {}}
+             * Signals have type and the actual data accociate with it
+             * there are 'zoomin' 'zoomout' 'drag'
+             * there are 'rectange selection', 'polygon selection', 'brush selection'
+             */
+            dispatch_signal: function(e, detail, sender){
+                if (detail.type && this['to_'+detail.type]){
+                    this['to_'+detail.type](detail.args);
+                }                
+            },
+            to_zoomin: function(args){
+                this.cursor.change_cursor('zoomin');
+                this.$.selection.style.display = 'none';
+            },
+            to_zoomout: function(args){
+                this.cursor.change_cursor('zoomout');
+                this.$.selection.style.display = 'none';
+            },
+            to_drag: function(args){
+                this.cursor.change_cursor('drag');
+                this.selection.clear_selected();
+                this.viewer.enable();
+                this.$.selection.style.display = 'none';
+            },
+            to_selection: function(args){
+                this.cursor.change_cursor('selection');
+                this.selection.rectangle_selection();
+                this.$.selection.style.display = 'block';
+                this.viewer.disable();
+            },
+            to_polygon: function(args){
+                this.cursor.change_cursor('polygon');
+                this.selection.point_selection();
+                this.$.selection.style.display = 'block';
+                this.viewer.disable();
+            },
+            to_brush: function(args){
+                this.cursor.change_cursor('brush');
+                this.selection.stroke_selection();
+                this.$.selection.style.display = 'block';
+                this.viewer.disable();
+            },
+            layer_create: function(args){
+                this.$.viewer.create_layer(args.id);
+            },
+            layer_reorder: function(args){
+                this.$.viewer.reorder_layers(args.order_list);
+            },
+        });
+    })();        
+    </script>
+</dom-module>

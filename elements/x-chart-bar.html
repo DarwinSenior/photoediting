@@ -1,0 +1,78 @@
+<dom-module id="x-chart-bar">
+    <style>
+    :host {
+        display : block;        
+        height: 100px;
+    }
+    </style>
+    <template>
+        <svg id="svg" height="100%" width="100%" viewBox="0 0 300 100">
+        </svg>
+    </template>
+    <script>
+    (function(){
+        Array.prototype.fill = function(val){for (var i=0; i<this.length; i++){
+            this[i] = val;
+        }};
+        Polymer({
+            is: "x-chart-bar",
+            properties: {
+                data: {type: Object, value: {
+                    R: Array(256).fill(0), 
+                    G: Array(256).fill(10),
+                    B: Array(256).fill(20)}, observer: 'update'}       
+            },
+            attached: function(){
+                d3.select(this.$.svg).style('background-color', '#EEEEEE');
+                // nv.addGraph(this.drawGraph.bind(this)); 
+                // this.drawGraph(this.toData(this.data), );
+                var data = this.calculate_lines(this.toData(this.data));
+                console.log(data);
+                d3.select(this.$.svg).selectAll('path').data(data)
+                    .enter().append('path').attr('d', function(d){return d.path})
+                    .attr('stroke', function(d){return d.color})
+                    .attr('fill', 'none');
+            },
+            calculate_lines: function(data){
+                var bbox = this.$.svg.viewBox.baseVal;
+                var padding = 5;
+                var width = bbox.width-padding*2;
+                var height = bbox.height-padding*2;
+
+                var x = d3.scale.linear().domain([0, 256]).range([padding, width+padding]);
+                var svg = d3.select(this.$.svg);
+                var ymax = 0;
+                for (var color in data){
+                    ymax = Math.max(ymax, Math.max.apply(Math, data[color].values));                    
+                }
+                var y = d3.scale.linear()
+                            .domain([0, ymax])
+                            .range([padding, height+padding]);
+                var line = d3.svg.line()
+                            .x(function(d, i){return x(i);})
+                            .y(function(d){return y(d)});
+                for (var i = 0; i < data.length; i++){
+                    data[i].path = line(data[i].values);
+                }
+                return data;
+            },
+            update: function(data){
+                console.log(data);
+                // d3.select(this.$.svg).selectAll('path')
+                    // .data(this.calculate_lines(this.toData(this.data)))
+                    // .transition().attr('d', function(d){return d.path});
+            },
+            toData: function(data){
+                return [                     
+                     {values: data.R, key: 'red', color: '#F44336'},
+                     {values: data.G, key: 'green', color: '#4CAF50'},
+                     {values: data.B, key: 'blue', color: '#2196F3'},
+                ];
+            },
+            toPoint: function(d, i){
+                return {x: i, y: d};
+            }
+        });
+    })();        
+    </script>
+</dom-module>

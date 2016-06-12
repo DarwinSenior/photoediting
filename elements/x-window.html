@@ -1,0 +1,93 @@
+<dom-module id="x-window">
+    <style>
+    :host {
+        display: block;
+    }
+    :host(.hidden){
+        display: none;
+    }
+    .wrapper{
+        border-radius : 4px;
+        box-shadow: 2px 2px 5px 0px var(--paper-grey-600);
+        overflow: hidden;
+        opacity: 1;
+        position: absolute;
+        float: left;
+    }
+    .header{
+        padding: 5px;
+        /* background : linear-gradient(to bottom, #212121 0%, #424242 100%); */
+        background: linear-gradient(to bottom, var(--paper-grey-900) 0%, var(--paper-grey-800) 100%);        
+        @apply(--layout-horizontal);
+        @apply(--layout);
+        font-size: 20px;
+        /* color: #FAFAFA; */
+        color: var(--paper-grey-50);
+    }
+    .title{
+        text-align: center;
+        @apply(--layout-flex);
+        cursor: default;
+    }
+    .button{
+    }
+    .content{
+        width: auto;
+        padding: 20px 10px;
+        background: #424242;
+    }
+    </style>
+    <template>
+    <div class="wrapper">
+        <div class="header">
+              <template is="dom-if" if="[[closebutton]]">
+                    <iron-icon icon="fa:times-circle" on-click="hide"></iron-icon>
+              </template>  
+                <div class="title">[[title]]</div>
+        </div>
+        <div class="content">
+            <content></content>
+        </div>
+    </div>
+    </template>
+    <script>
+    (function(){
+        Polymer({
+            is: "x-window",
+            properties: {
+                title : {type: String, value: 'untitled'},
+                window_id: {type: String, value: undefined},
+                closebutton: {type: Boolean, value: false},
+                visible: {type: Boolean, value: true},
+            },
+            attached: function(){
+                this.draggie = new Draggabilly(this.$$('.wrapper'), {
+                    handle: '.header',}); 
+            },
+            hide: function(){
+                if (this.visible){
+                    var animation = this.animate(
+                            [{opacity: 1.0}, {opacity: 0.0}], 
+                            {duration: 100, fill: 'forwards'});
+                    setTimeout(()=>{
+                        this.classList.add('hidden');
+                        this.visible = false;
+                    },100);
+                }
+            },
+            show: function(){
+                if (!this.visible){
+                    var animation = this.animate(
+                            [{opacity: 0.0}, {opacity: 1.0}],
+                            {duration: 100, fill: 'forwards'});
+                    setTimeout(()=>{
+                         this.classList.remove("hidden");
+                         this.visible = true;
+                         this.draggie.enable();
+                     }, 0);
+                }    
+            }
+        });
+    })();        
+    </script>
+</dom-module>

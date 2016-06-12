@@ -1,0 +1,80 @@
+<dom-module id="x-layer">
+    <style>
+    :host {
+        display : block;
+    }
+    .layer-wrapper{
+        margin: 10px 20px;
+        width: 250px;
+        height: 30px;
+        @apply(--layout);
+        @apply(--layout-horizontal);
+    }
+    .layer-wrapper.sortable-ghost{
+        background-color: var(--paper-grey-900);
+        opacity: 0.5;
+    }
+    .layer-wrapper.chosen{
+        background-color: var(--paper-blue-400);
+    }
+    .layer-wrapper > iron-icon{
+        margin: auto 3px;
+        height: 15px;
+        width: 15px;
+    }
+    .layer-wrapper > span{
+        margin: auto;
+    }
+    </style>
+    <template>
+    <x-window title="layers">
+        <sortable-list animation="100" on-sort-end="sort_end">
+            <template is="dom-repeat" items="[[layers]]">
+                <div class="layer-wrapper">
+                    <iron-icon icon="fa:pictue-o"></iron-icon>
+                    <span class="flex layer-name">[[item.name]]</span>
+                    <iron-icon icon="[[item.lock]]"></iron-icon>
+                    <iron-icon icon="[[item.show]]"></iron-icon>
+                </div>
+            </template>
+        </sortable-list>
+        <x-slider name="opacity"></x-slider>
+    </x-window>
+    </template>
+    <script>
+    (function(){
+        Array.prototype.move = function(from,to){
+          this.splice(to,0,this.splice(from,1)[0]);
+          return this;
+        };
+        Polymer({
+            is: "x-layer",
+            properties: {
+                layers: {type: Array, value: []} 
+            },
+            attached: function(){
+                this.layers = [
+                {name: 'layer1', lock: 'fa:unlock-alt', show: 'fa:eye'},
+                {name: 'layer2', lock: 'fa:unlock-alt', show: 'fa:eye'},
+                {name: 'layer3', lock: 'fa:unlock-alt', show: 'fa:eye'},
+                {name: 'layer4', lock: 'fa:unlock-alt', show: 'fa:eye'},
+                ];
+            },
+            sort_end: function(event){ 
+                var oldIndex = event.detail.oldIndex;
+                var newIndex = event.detail.newIndex;
+                this.layers = this.layers.move(oldIndex, newIndex);
+                var wrappers = this.$$('.layer-wrapper');
+                for (var i = 0; i<wrappers.length; i++){
+                    console.log(wrappers);
+                    if (i!=newIndex){
+                        wrappers[i].classList.add('chosen');
+                    }else{
+                        wrappers[i].classList.remove('chosen');
+                    }
+                }
+            },
+        });
+    })();        
+    </script>
+</dom-module>

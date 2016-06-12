@@ -1,0 +1,131 @@
+<dom-module id="x-menu">
+    <style>
+    :host {
+        display : block;
+        /* position : absolute; */
+        /* height: 100%; */
+        /* width: 100%; */
+        /* @apply(--layout); */
+        /* @apply(--layout-horizontal); */
+    }
+    #layer {
+        display: block;
+        position: absolute;
+        top: 0; bottom: 0; left: 0; right: 0;
+        /* background-color: var(--paper-grey-900); */
+        background-color: rgba(11, 11, 11, 0.5);
+        @apply(--layout);
+        @apply(--layout-horizontal);
+    }
+    #layer.hidden{
+        display: none;
+    }
+    x-window{
+        margin: auto;
+        top: 10%;
+        left: 25%;
+        position: fixed;
+    }
+    x-window.hidden{
+        display: none;
+    }
+    .content{
+        width: 50vw;
+    }
+    x-button{
+        cursor: pointer;
+    }
+    #entrance{
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        background-color: black;
+        padding: 20px;
+        border-radius: 40px;
+        box-shadow: 2px 2px 5px 0px var(--paper-grey-600);
+    }
+    </style>
+    <template>
+        <div id="layer">
+            <x-window title="MENU" id="window">
+                <div class="content">
+                    <x-select value="{{submenu}}" selectitems="[[submenus]]"></x-select>
+                </div>
+                <iron-collapse id="File">
+                    <x-menu-file></x-menu-file>
+                </iron-collapse>
+                <iron-collapse id="Windows">
+                </iron-collapse>
+                <iron-collapse id="Tools">
+                </iron-collapse>
+                <iron-collapse id="Help">
+                </iron-collapse>
+                <div class="layout horizontal">
+                    <div class="flex-4"></div>
+                    <x-button class="flex" on-click="hide">Cancel</x-button>
+                </div>
+            </x-window>
+        </div>
+        <div id="entrance" on-click="show">
+            <iron-icon class="icon" icon="menu"></iron-icon>
+        </div>
+    </template>
+    <script>
+    (function(){
+        Polymer({
+            is: "x-menu",
+            listeners: {'close-menu': 'hide',},
+            properties: {
+                menuitems: {type: Array, value: [
+                    {name: "File", submenu: []},
+                    {name: "Windows", submenu: []},
+                    {name: "Tools", submenu:[]},
+                    {name: "Help", submenu: []},
+                ]},
+                submenus: {type: Array, value:['File', 'Windows', 'Tools', 'Help']},
+                submenu: {type: String, value: 'File', observer: 'changeMenu'},
+                visible: {type: Boolean, value: true},
+            },
+            attached: function(){
+                this.current_collapse = this.$[this.submenu];
+                if (this.current_collapse && this.current_collapse.tagName=="IRON-COLLAPSE"){
+                    this.current_collapse.show();
+                }
+            },
+            hide: function(){
+                if (this.visible){
+                    this.$.window.hide();
+                    var animation = this.$.layer.animate(
+                            [{opacity: 1.0}, {opacity: 0.0}], 
+                            {duration: 100, fill: 'forwards'});
+                    setTimeout(()=>{
+                        this.$.layer.classList.add('hidden');
+                        this.visible = false;
+                    },100);
+                }
+            },
+            show: function(){
+                if (!this.visible){
+                    this.$.window.show();
+                    var animation = this.$.layer.animate(
+                            [{opacity: 0.0}, {opacity: 1.0}],
+                            {duration: 100, fill: 'forwards'});
+                    setTimeout(()=>{
+                         this.$.layer.classList.remove("hidden");
+                         this.visible = true;
+                     }, 0);
+                }    
+            },
+            changeMenu: function(submenu){
+                if (this.current_collapse && this.current_collapse.tagName=="IRON-COLLAPSE"){
+                    this.current_collapse.hide();
+                }
+                this.current_collapse = this.$[submenu];
+                if (this.current_collapse && this.current_collapse.tagName=="IRON-COLLAPSE"){
+                    this.current_collapse.show();
+                }
+            }
+        });
+    })();        
+    </script>
+</dom-module>

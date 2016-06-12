@@ -1,0 +1,47 @@
+<dom-module id="x-slider">
+    <style>
+    :host {
+        display : block;
+        apply(--layout);
+        apply(--layout-horizontal);
+        margin: 10px 0;
+    }
+    #number{
+        width: 100%;
+    }
+    #slider{
+        margin: 5px 5%;
+        width: 90%;
+    }
+    .wrapper{
+        margin: auto;
+    }
+    </style>
+    <template>
+    <div  class="layout horizontal">
+        <div class="flex-1 wrapper">
+            <span><span>[[name]]</span>:</span>
+        </div>
+        <div class="flex-3 wrapper">
+            <input id="slider" type="range" min$="[[min]]" max$="[[max]]" value="{{value::mouseup}}" step$="[[step]]">
+        </div>
+        <div class="flex-1 wrapper">
+            <input id="number" type="value" value="{{value::change}}" >
+        </div>
+    </div>
+    </template>
+    <script>
+    (function(){
+        Polymer({
+            is: "x-slider",
+            properties: {
+                name: {type: String, value: 'undefined'},
+                min: {type: Number, value: 0},
+                max: {type: Number, value: 100},
+                value: {type: Number, value: 0, notify: true},
+                step: {type: Number, value: 1},
+            }
+        });
+    })();        
+    </script>
+</dom-module>

@@ -1,0 +1,57 @@
+<dom-module id="x-basic-bar">
+    <style>
+    :host {
+        display : block;
+    }
+    x-window{
+        width: 400px;
+    }
+    </style>
+    <template>
+    <x-window title="basic tool" closebutton>
+        <x-button style="width: 40px; margin: auto" on-click="auto_change">auto</x-button>
+        <x-slider name="contrast" min="0" max="1" value="{{contrast}}" step="0.01"></x-slider>
+        <x-slider name="brightness" min="-1" max="1" value="{{brightness}}" step="0.01"></x-slider>
+        <x-slider name="satuation" min="-1" max="1" value="{{satuation}}" step="0.01"></x-slider>
+    </x-window>
+    </template>
+    <script>
+    (function(){
+        Polymer({
+            is: "x-basic-bar",
+            properties: {
+                contrast: {type: Number, value: 0, observer:"contrast_change"},
+                brightness: {type: Number, value: 0, observer:"brightness_change"},
+                satuation: {type: Number, value: 0, observer:"satuation_change"},
+                auto: {type: Boolean, value: false},
+            },
+            contrast_change: function(value){
+                if (!this.auto){
+                    console.log(value);
+                    common.naclModule.postMessage({cmd: 'change contrast', data: +value});
+                }
+            },
+            brightness_change: function(value){
+                if (!this.auto){
+                    console.log(value);
+                    common.naclModule.postMessage({cmd: 'change brightness', data: +value});
+                }
+            },
+            satuation_change: function(value){
+                if (!this.auto){
+                    console.log(value);
+                    common.naclModule.postMessage({cmd: 'change satuation', data: +value});
+                }
+            },
+            auto_change: function(){
+                this.auto = true;
+                this.brightness = 0;
+                this.satuation = 0;
+                this.contrast = 0;
+                this.auto = false;
+            }
+
+        });
+    })();        
+    </script>
+</dom-module>

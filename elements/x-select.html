@@ -1,0 +1,31 @@
+<dom-module id="x-select">
+    <style>
+    :host {
+        display : block;
+        margin: 10px 0;
+    }
+    select{
+        width: 100%;
+    }
+    </style>
+    <template>
+    <select value="{{value::change}}">
+        <template is="dom-repeat" items="[[selectitems]]">
+            <option>[[item]]</option>
+        </template>
+    </select>
+    </template>
+    <script>
+    (function(){
+        Polymer({
+            is: "x-select",
+            properties: {
+                selectitems: {type: Array, value: ['one', 'two', 'three', 'four']},
+                value: {type: String, value: 'one', notify: true},
+            },
+            attached: function(){
+            }
+        });
+    })();        
+    </script>
+</dom-module>
